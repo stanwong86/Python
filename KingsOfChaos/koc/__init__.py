@@ -26,8 +26,8 @@ def random_sleep_minutes(minutes_start, minutes_end):
 def random_sleep_seconds(seconds_start, seconds_end):
 	k.random_sleep_seconds(seconds_start, seconds_end)
 
-def buy_weapon(weapon, amount):
-	arm.buy_weapon(weapon, amount)
+def buy_weapon(weapon, amount, limit=0):
+	arm.buy_weapon(weapon, amount, limit)
 
 def sell_weapon(weapon, amount):
 	arm.sell_weapon(weapon, amount)
@@ -56,5 +56,5 @@ def raid(defender_id):
 def get_current_gold():
 	return k.get_current_gold()
 
-def buy_untrained_mercs(limit):
-	return merc.buy_untrained_mercs(limit)
+def buy_mercs(merc_type, limit):
+	return merc.buy_mercs(merc_type, limit)

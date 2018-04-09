@@ -9,14 +9,6 @@ class Armory(object):
 		self.koc = koc
 		self.url = 'https://www.kingsofchaos.com/armory.php'
 
-	def log_result(self, html_source, weapon, amount):
-		pattern = 'Not enough money for those items.'
-		msg = 'Bought %s %s' % (amount, weapon)
-		m = re.search(pattern, html_source)
-		if m:
-			msg = 'Not enough money for %s' % (weapon)
-		tools.log(msg)
-
 	def new_buy_weapon_impl(self, weapon, amount):
 		url = 'https://www.kingsofchaos.com/armory.php'
 		payload = {
@@ -26,12 +18,21 @@ class Armory(object):
 		}
 
 		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
-		html_source = post.content
-		self.log_result(html_source, weapon, amount)
 
-	def buy_weapon(self, weapon, amount):
+	def get_current_weapon_count(self, weapon):
+		source = self.koc.read_url(self.url)
+		pattern = '\n\t<tr>\n\t\t<td>%s.*$\n.*>(.*)</td>' % weapon
+		m = re.search(pattern, source, re.MULTILINE)
+		
+		if m:
+			return m.group(1)
+
+	def buy_weapon(self, weapon, amount, limit=0):
 		try:
-			self.new_buy_weapon_impl(weapon, amount)
+			weapon_count = self.get_current_weapon_count(weapon)
+			if weapon_count < limit or limit == 0 and amount != 0:
+				self.new_buy_weapon_impl(weapon, amount)
+				tools.log('Bought {%s} %s' % (amount, weapon))
 		except Exception:
 			tools.log('Connection Error in Armory')
 			print "Unexpected error:", sys.exc_info()[0]

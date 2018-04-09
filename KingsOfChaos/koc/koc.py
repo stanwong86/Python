@@ -91,7 +91,7 @@ class KoC(object):
 		m = re.search('>Gold:<.*$\n\s*(.*)', source, re.MULTILINE)
 		if m:
 			gold_with_comma = m.group(1)
-			tools.log('Current Gold: %s' % gold_with_comma)
+			tools.log('Current Gold {%s}' % gold_with_comma)
 			gold = re.sub(',','',gold_with_comma)
 			return gold
 		return '0'

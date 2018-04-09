@@ -60,34 +60,6 @@ def run_sell_and_upgrade_siege():
 	koc.sell_weapon('Heavy Steed', 100)
 	koc.upgrade_siege()
 
-def short_sleep_buy(weapon, amount):
-	koc.buy_weapon(weapon, amount)
-	koc.random_sleep_seconds(5, 10)
-
-def auto_buy(weapon, weapon_cost):
-	gold = koc.get_current_gold()
-	max_amount = math.floor(int(gold)/weapon_cost)
-	short_sleep_buy(weapon, max_amount)
-
-def auto():
-	koc.setup('qqqq')
-
-	while True:
-		try:
-			koc.login()
-			koc.create_diversion()
-			koc.buy_max_attackers()
-			koc.buy_untrained_mercs(25000)
-			koc.repair_chariots()
-			
-			auto_buy('Chariot', 450000)
-			koc.random_sleep_minutes(9, 11)
-			auto_buy('Lookout Tower', 1000000)
-		except Exception:
-			tools.log('Connection Error in main')
-			print "Unexpected error:", sys.exc_info()[0]
-		koc.random_sleep_minutes(9, 11)
-
 def raid_dark_mirage():
 	koc.setup('qqqq')
 	koc.login()
@@ -96,8 +68,45 @@ def raid_dark_mirage():
 def run_fake_sab():
 	s = Sabotage()
 
-def manual():
-	pass
+def auto_buy(weapon, limit=0):
+	weapon_costs = {
+		'Nunchaku': 1000000,
+		'Lookout Tower': 1000000,
+		'Chariot': 450000
+	}
+
+	gold = koc.get_current_gold()
+	max_amount = int(math.floor(int(gold)/weapon_costs[weapon]))
+	koc.buy_weapon(weapon, max_amount, limit)
+	koc.random_sleep_seconds(5, 10)
+
+def cycle():
+	koc.buy_mercs('general', 1000)
+	koc.buy_mercs('attack', 30000)
+	koc.repair_chariots()
+	auto_buy('Nunchaku', 650)
+	auto_buy('Chariot', 11000)
+	auto_buy('Lookout Tower')
+
+def auto():
+	koc.setup('qqqq')
+	while True:
+		try:
+			koc.login()
+			koc.create_diversion()
+			koc.buy_max_attackers()
+
+			cycle()
+			koc.random_sleep_minutes(6, 8)
+
+			cycle()
+			koc.random_sleep_minutes(6, 8)
+			
+			cycle()
+		except Exception:
+			tools.log('Connection Error in main')
+			print "Unexpected error:", sys.exc_info()[0]
+		koc.random_sleep_minutes(6, 8)
 
 def main():
 	auto()
