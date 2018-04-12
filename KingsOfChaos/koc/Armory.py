@@ -3,11 +3,17 @@ import os
 sys.path.append('C:\\dev\\python\\KingsOfChaos')
 import re
 import tools
+import traceback
 
 class Armory(object):
 	def __init__(self, koc):
 		self.koc = koc
 		self.url = 'https://www.kingsofchaos.com/armory.php'
+		self.previous_weapon_counts = {
+			'Nunchaku': 0,
+			'Lookout Tower': 0,
+			'Chariot': 0
+		}
 
 	def new_buy_weapon_impl(self, weapon, amount):
 		url = 'https://www.kingsofchaos.com/armory.php'
@@ -21,20 +27,41 @@ class Armory(object):
 
 	def get_current_weapon_count(self, weapon):
 		source = self.koc.read_url(self.url)
-		pattern = '\n\t<tr>\n\t\t<td>%s.*$\n.*>(.*)</td>' % weapon
+		pattern = '\t\t<td>%s</td>.*\n.*<td align="right">(.*)</td>' % weapon
 		m = re.search(pattern, source, re.MULTILINE)
-		
 		if m:
-			return m.group(1)
+			count_without_commas = re.sub(',', '', m.group(1))
+			return count_without_commas
+		else:
+			print 'Cannot find weapon {%s}' % weapon
+			tools.write_to_file('weapon_source.txt', source)
+			return 0
+
+	def log_sabbed_weapons(self, weapon, weapon_count):
+		previous_count = int(self.previous_weapon_counts[weapon])
+		if weapon_count < previous_count:
+			sabbed_count = previous_count - weapon_count
+			msg = "=== {%s} %ss were sabbed! ===" % (sabbed_count, weapon)
+			tools.log(msg)
+			tools.log_sabbed_weapons('%s %s' % (weapon, sabbed_count))
+		self.previous_weapon_counts[weapon] = weapon_count
 
 	def buy_weapon(self, weapon, amount, limit=0):
 		try:
-			weapon_count = self.get_current_weapon_count(weapon)
-			if weapon_count < limit or limit == 0 and amount != 0:
+			weapon_count = int(self.get_current_weapon_count(weapon))
+			if (weapon_count < limit or limit == 0) and amount != 0:
 				self.new_buy_weapon_impl(weapon, amount)
-				tools.log('Bought {%s} %s' % (amount, weapon))
+				tools.log('%s - Current {%s} Bought {%s}' % (weapon, weapon_count, amount))
+				weapon_count = weapon_count + int(amount)
+			elif weapon_count > limit and limit != 0:
+				tools.log('%s - Current {%s} Limit Reached {%s}' % (weapon, weapon_count, limit))
+			elif amount == 0:
+				tools.log('%s - Current {%s} Not Enough Money' % (weapon, weapon_count))
+
+			self.log_sabbed_weapons(weapon, weapon_count)
 		except Exception:
 			tools.log('Connection Error in Armory')
+			traceback.print_exc()
 			print "Unexpected error:", sys.exc_info()[0]
 
 	def sell_weapon(self, weapon, amount):

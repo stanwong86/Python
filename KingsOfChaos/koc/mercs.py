@@ -40,7 +40,6 @@ class Mercs(object):
 
 		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
 		source = post.content
-		tools.log('Bought {%s} %s Mercs' % (amount, merc_type.capitalize()))
 
 	def buy_mercs(self, merc_type, limit):
 		merc_costs = {'attack': 4500, 'defend': 4500, 'general': 3500}
@@ -54,6 +53,7 @@ class Mercs(object):
 			self.koc.random_sleep_seconds(5, 10)
 			amount = int(gold)/merc_cost
 			self.buy_mercs_impl(merc_type, amount)
+			tools.log('%s Mercs Current {%s} Bought {%s} ' % (merc_type.capitalize(), mercs, amount))
 
 def main():
 	from koc import KoC

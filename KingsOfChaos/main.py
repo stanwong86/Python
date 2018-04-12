@@ -81,11 +81,11 @@ def auto_buy(weapon, limit=0):
 	koc.random_sleep_seconds(5, 10)
 
 def cycle():
-	koc.buy_mercs('general', 1000)
+	koc.buy_mercs('general', 6000)
 	koc.buy_mercs('attack', 30000)
 	koc.repair_chariots()
-	auto_buy('Nunchaku', 650)
-	auto_buy('Chariot', 11000)
+	#auto_buy('Nunchaku', 650)
+	auto_buy('Chariot', 10400)
 	auto_buy('Lookout Tower')
 
 def auto():

@@ -33,6 +33,9 @@ def write_to_file_silently(filename, data):
 	return filename
 
 def log(msg, silent=False):
+	log_impl(msg, silent)
+
+def log_impl(msg, silent, prefix=''):
 	if not silent:
 		print(msg)
 	date = datetime.datetime.now().strftime("%Y%m%d")
@@ -42,9 +45,12 @@ def log(msg, silent=False):
 	sub_fname = file_name[-1].split('.')[0]
 
 	create_directory('log')
-	fname = 'log/{}_{}.log'.format(sub_fname, date)
+	fname = 'log/{}{}_{}.log'.format(prefix, sub_fname, date)
 	with open(fname, "a") as text_file:
 		text_file.write(date_time + '|' + msg + '\n')
+
+def log_sabbed_weapons(msg):
+	log_impl(msg, True, 'sabbed_weapons_')
 
 def get_local_filename(fname):
 	name, ext = fname.rsplit('.', 1)
