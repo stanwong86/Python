@@ -1,13 +1,14 @@
 import sys
 import os
-sys.path.append('C:\\dev\\python\\KingsOfChaos')
 import re
 import tools
 import traceback
+from base import Base
 
-class Armory(object):
-	def __init__(self, koc):
-		self.koc = koc
+class Armory(Base):
+	def __init__(self):
+		super(Armory, self).__init__()
+		print ' is suck'
 		self.url = 'https://www.kingsofchaos.com/armory.php'
 		self.previous_weapon_counts = {
 			'Nunchaku': 0,
@@ -18,15 +19,15 @@ class Armory(object):
 	def new_buy_weapon_impl(self, weapon, amount):
 		url = 'https://www.kingsofchaos.com/armory.php'
 		payload = {
-			'buy_weapon[%s]' % (self.koc.weapons[weapon]): amount,
-			'turing': self.koc.get_turing_string(),
+			'buy_weapon[%s]' % (self.weapons[weapon]): amount,
+			'turing': self.get_turing_string(),
 			'buybut': 'Buy Weapons'
 		}
 
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 
 	def get_current_weapon_count(self, weapon):
-		source = self.koc.read_url(self.url)
+		source = self.read_url(self.url)
 		pattern = '\t\t<td>%s</td>.*\n.*<td align="right">(.*)</td>' % weapon
 		m = re.search(pattern, source, re.MULTILINE)
 		if m:
@@ -67,10 +68,10 @@ class Armory(object):
 	def sell_weapon(self, weapon, amount):
 		url = 'https://www.kingsofchaos.com/armory.php'
 		payload = {
-			'scrapsell[%s]' % (self.koc.weapons[weapon]): amount,
+			'scrapsell[%s]' % (self.weapons[weapon]): amount,
 			'hash': ''
 		}
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 		html_source = post.content
 		tools.log('Sold Weapon {%s} Amount {%s}' % (weapon, amount))
 
@@ -81,12 +82,12 @@ class Armory(object):
 			'upgrade_siege_type': 'attack',
 			'hash':''
 		}
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 		html_source = post.content
 		tools.log('Upgraded Siege')
 
 	def repairs_needed(self):
-		source = self.koc.read_url(self.url)
+		source = self.read_url(self.url)
 		m = re.search('Repair all weapons', source)
 		pattern = 'repair\[72\]" size="4" maxlength="7" value="(.*)"'
 
@@ -104,7 +105,7 @@ class Armory(object):
 				'repair[72]': repair_value,
 				'hash':''
 			}
-			self.koc.session.post(self.url, data=payload, headers=self.koc.headers)
+			self.session.post(self.url, data=payload, headers=self.headers)
 			tools.log('Repaired {} Chariots'.format(repair_value))
 
 def main():

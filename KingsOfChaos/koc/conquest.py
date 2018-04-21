@@ -1,12 +1,12 @@
 import sys
 import os
-sys.path.append('C:\\dev\\python\\KingsOfChaos')
 import re
 import tools
+from base import Base
 
-class Conquest(object):
-	def __init__(self, koc):
-		self.koc = koc
+class Conquest(Base):
+	def __init__(self):
+		pass
 
 	def conquest(self, target, count):
 		url = 'https://www.kingsofchaos.com/conquest.php'
@@ -17,7 +17,7 @@ class Conquest(object):
 		}
 
 		for i in xrange(count):
-			post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+			post = self.session.post(url, data=payload, headers=self.headers)
 			html_source = post.content
 
 			m = re.search('.*\(You have completed this conquest \d* times\)', html_source)
@@ -25,9 +25,7 @@ class Conquest(object):
 				tools.log('%s: %s' % (target, m.group()))
 
 def main():
-	from koc import KoC
-	k = KoC('qqqq')
-	c = Conquest(k)
+	c = Conquest()
 	c.conquest(target='Wizards', count=1)
 
 if __name__ == "__main__":

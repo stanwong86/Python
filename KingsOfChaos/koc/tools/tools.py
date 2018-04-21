@@ -35,7 +35,10 @@ def write_to_file_silently(filename, data):
 def log(msg, silent=False):
 	log_impl(msg, silent)
 
-def log_impl(msg, silent, prefix=''):
+def log_silently(msg):
+	log_impl(msg, True)
+
+def log_impl(msg, silent, file_prefix=''):
 	if not silent:
 		print(msg)
 	date = datetime.datetime.now().strftime("%Y%m%d")
@@ -45,7 +48,7 @@ def log_impl(msg, silent, prefix=''):
 	sub_fname = file_name[-1].split('.')[0]
 
 	create_directory('log')
-	fname = 'log/{}{}_{}.log'.format(prefix, sub_fname, date)
+	fname = 'log/{}{}_{}.log'.format(file_prefix, sub_fname, date)
 	with open(fname, "a") as text_file:
 		text_file.write(date_time + '|' + msg + '\n')
 

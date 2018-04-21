@@ -1,9 +1,11 @@
 import sys
 import os
 import re
-import koc
+from koc import KoC
+from koc import tools
 import math
-import tools
+import traceback
+
 
 def _setup_ssl():
 	''' Magic to bypass SSL '''
@@ -81,35 +83,40 @@ def auto_buy(weapon, limit=0):
 	koc.random_sleep_seconds(5, 10)
 
 def cycle():
-	koc.buy_mercs('general', 6000)
-	koc.buy_mercs('attack', 30000)
+	koc.buy_mercs('general', 4000)
+	koc.buy_mercs('attack', 40000)
 	koc.repair_chariots()
-	#auto_buy('Nunchaku', 650)
-	auto_buy('Chariot', 10400)
-	auto_buy('Lookout Tower')
-
+	auto_buy('Chariot', 11000)
+	auto_buy('Lookout Tower', 1200)
+	auto_buy('Nunchaku')
+	
 def auto():
-	koc.setup('qqqq')
 	while True:
 		try:
-			koc.login()
-			koc.create_diversion()
-			koc.buy_max_attackers()
+			k = KoC()
+			k.login()
 
-			cycle()
-			koc.random_sleep_minutes(6, 8)
+			#koc.create_diversion()
+			#koc.buy_max_attackers()
 
-			cycle()
-			koc.random_sleep_minutes(6, 8)
+			#cycle()
+			#koc.random_sleep_minutes(5, 10)
+			#cycle()
+			#koc.random_sleep_minutes(5, 10)
 			
-			cycle()
+			#cycle()
 		except Exception:
 			tools.log('Connection Error in main')
+			traceback.print_exc()
 			print "Unexpected error:", sys.exc_info()[0]
-		koc.random_sleep_minutes(6, 8)
+		koc.random_sleep_minutes(5, 10)
+
+def test():
+	k = KoC()
+	k.buy_weapon('Chariot', 1, 1)
 
 def main():
-	auto()
+	test()
 
 if __name__ == "__main__":
 	main()
