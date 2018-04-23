@@ -8,8 +8,9 @@ import requests
 from random import randint
 import time
 from weapons import get_weapons
+from ArmorySource import ArmorySource
 
-class Base(object):
+class Base(ArmorySource):
 	headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'Connection': 'keep-alive',
@@ -19,22 +20,13 @@ class Base(object):
 	}
 
 	count = 0
-
-	def __new__(cls, *args, **kwargs):
-		obj = super(Base, cls).__new__(cls)
-		obj.__init__(*args, **kwargs)
-		obj.set_session
-
-	def set_session(self):
-		with requests.session as temp_session:
-			self.session = temp_session
-			self.login()
-			print count
-			count += 1	
-
 	def __init__(self):
-		print 'i am useless init'
-		
+		super(Base, self).__init__()
+		with requests.Session() as session:
+			self.session = session
+		self.weapons = get_weapons()
+		self.login()
+		print 'Base Class'
 
 	def get_user_password(self):
 		d = {}
@@ -67,13 +59,6 @@ class Base(object):
 		image = Image.open(StringIO(image_request_result.content))
 		return image
 
-	def get_turing_string(self):
-		url = 'https://www.kingsofchaos.com/armory.php'
-		source = self.read_url(url)
-		m = re.search('name="turing" value="(.*)">', source)
-		if m:
-			return m.group(1)
-
 	def read_url(self, url):
 		tools.log_silently('read_url: {%s}' % url)
 		response = self.session.get(url, headers=self.headers)
@@ -104,23 +89,7 @@ class Base(object):
 		self.random_sleep_seconds_with_page('base', 5, 20)
 		self.random_sleep_seconds_with_page('train', 5, 20)
 		self.random_sleep_seconds_with_page('armory', 5, 20)
-		print('--- Diversion End ---')
-
-	def get_current_gold_from_source(self, source):
-		m = re.search('>Gold:<.*$\n\s*(.*)', source, re.MULTILINE)
-		if m:
-			gold_with_comma = m.group(1)
-			tools.log('Current Gold {%s}' % gold_with_comma)
-			gold = re.sub(',','',gold_with_comma)
-			return gold
-		return '0'
-
-	def get_current_gold(self, url=None):
-		if not url:
-			url = 'https://www.kingsofchaos.com/armory.php'
-		source = self.read_url(url)
-		return self.get_current_gold_from_source(source)
-		
+		print('--- Diversion End ---')		
 
 def main():
 	pass

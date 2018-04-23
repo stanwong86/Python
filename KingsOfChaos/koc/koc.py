@@ -9,10 +9,9 @@ from training import Training
 from attack import Attack
 from mercs import Mercs
 
-class KoC(Armory, Conquest, Attack, Mercs):
+class KoC(Armory, Conquest, Training, Mercs):
 	def __init__(self):
 		super(KoC, self).__init__()
-		return self
 
 def main():
 	k = KoC()

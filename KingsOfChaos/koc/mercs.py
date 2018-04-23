@@ -6,24 +6,7 @@ from base import Base
 
 class Mercs(Base):
 	def __init__(self):
-		pass
-
-	def get_current_merc_count(self, merc_type):
-		url = 'https://www.kingsofchaos.com/mercs.php'
-		source = self.read_url(url)
-		
-		if merc_type == 'general':
-			m = re.search('>Untrained Mercenaries.*$\n.*>(.*)</td>', source, re.MULTILINE)
-		elif merc_type == 'attack':
-			m = re.search('>Trained Attack Mercenaries.*$\n.*>(.*)</td>', source, re.MULTILINE)
-		elif merc_type == 'defend':
-			m = re.search('>Trained Defense Mercenaries.*$\n.*>(.*)</td>', source, re.MULTILINE)
-
-		if m:
-			merc_with_comma = m.group(1)
-			tools.log('%s Mercs {%s}' % (merc_type.capitalize(), merc_with_comma))
-			merc_count = re.sub(',','',merc_with_comma)
-			return merc_count
+		super(Mercs, self).__init__()
 
 	def buy_mercs_impl(self, merc_type, amount):
 		url = 'https://www.kingsofchaos.com/mercs.php'

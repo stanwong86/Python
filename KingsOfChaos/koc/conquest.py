@@ -6,7 +6,7 @@ from base import Base
 
 class Conquest(Base):
 	def __init__(self):
-		pass
+		super(Conquest, self).__init__()
 
 	def conquest(self, target, count):
 		url = 'https://www.kingsofchaos.com/conquest.php'

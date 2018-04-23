@@ -8,7 +8,6 @@ from base import Base
 class Armory(Base):
 	def __init__(self):
 		super(Armory, self).__init__()
-		print ' is suck'
 		self.url = 'https://www.kingsofchaos.com/armory.php'
 		self.previous_weapon_counts = {
 			'Nunchaku': 0,
@@ -16,8 +15,8 @@ class Armory(Base):
 			'Chariot': 0
 		}
 
-	def new_buy_weapon_impl(self, weapon, amount):
-		url = 'https://www.kingsofchaos.com/armory.php'
+	def buy_weapon_impl(self, weapon, amount):
+		url = 'https://www.kingsofchaos.com/armory.php',
 		payload = {
 			'buy_weapon[%s]' % (self.weapons[weapon]): amount,
 			'turing': self.get_turing_string(),
@@ -25,18 +24,6 @@ class Armory(Base):
 		}
 
 		post = self.session.post(url, data=payload, headers=self.headers)
-
-	def get_current_weapon_count(self, weapon):
-		source = self.read_url(self.url)
-		pattern = '\t\t<td>%s</td>.*\n.*<td align="right">(.*)</td>' % weapon
-		m = re.search(pattern, source, re.MULTILINE)
-		if m:
-			count_without_commas = re.sub(',', '', m.group(1))
-			return count_without_commas
-		else:
-			print 'Cannot find weapon {%s}' % weapon
-			tools.write_to_file('weapon_source.txt', source)
-			return 0
 
 	def log_sabbed_weapons(self, weapon, weapon_count):
 		previous_count = int(self.previous_weapon_counts[weapon])
@@ -48,22 +35,24 @@ class Armory(Base):
 		self.previous_weapon_counts[weapon] = weapon_count
 
 	def buy_weapon(self, weapon, amount, limit=0):
-		try:
-			weapon_count = int(self.get_current_weapon_count(weapon))
-			if (weapon_count < limit or limit == 0) and amount != 0:
-				self.new_buy_weapon_impl(weapon, amount)
-				tools.log('%s - Current {%s} Bought {%s}' % (weapon, weapon_count, amount))
-				weapon_count = weapon_count + int(amount)
-			elif weapon_count > limit and limit != 0:
-				tools.log('%s - Current {%s} Limit Reached {%s}' % (weapon, weapon_count, limit))
-			elif amount == 0:
-				tools.log('%s - Current {%s} Not Enough Money' % (weapon, weapon_count))
+		#try:
+		weapon_count = int(self.get_current_weapon_count(weapon))
+		if (weapon_count < limit or limit == 0) and amount != 0:
+			self.buy_weapon_impl(weapon, amount)
+			tools.log('%s - Current {%s} Bought {%s}' % (weapon, weapon_count, amount))
+			weapon_count = weapon_count + int(amount)
+		elif weapon_count > limit and limit != 0:
+			tools.log('%s - Current {%s} Limit Reached {%s}' % (weapon, weapon_count, limit))
+		elif amount == 0:
+			tools.log('%s - Current {%s} Not Enough Money' % (weapon, weapon_count))
 
-			self.log_sabbed_weapons(weapon, weapon_count)
+		self.log_sabbed_weapons(weapon, weapon_count)
+		'''
 		except Exception:
 			tools.log('Connection Error in Armory')
 			traceback.print_exc()
 			print "Unexpected error:", sys.exc_info()[0]
+		'''
 
 	def sell_weapon(self, weapon, amount):
 		url = 'https://www.kingsofchaos.com/armory.php'

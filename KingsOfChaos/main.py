@@ -90,7 +90,7 @@ def cycle():
 	auto_buy('Lookout Tower', 1200)
 	auto_buy('Nunchaku')
 	
-def auto():
+def old_auto_buy():
 	while True:
 		try:
 			k = KoC()
@@ -111,12 +111,26 @@ def auto():
 			print "Unexpected error:", sys.exc_info()[0]
 		koc.random_sleep_minutes(5, 10)
 
-def test():
+def buy_max_weapon(k_obj, gold, weapon, limit=0):
+	weapon_costs = {
+		'Nunchaku': 1000000,
+		'Lookout Tower': 1000000,
+		'Chariot': 450000
+	}
+	max_amount = int(math.floor(int(gold)/weapon_costs[weapon]))
+	k_obj.buy_weapon(weapon, max_amount, limit)
+
+def run_auto_buy():
 	k = KoC()
-	k.buy_weapon('Chariot', 1, 1)
+	while True:
+		k.refresh_armory_source()
+		gold = k.get_current_gold()
+		#k.buy_max_attackers()
+		buy_max_weapon(k, gold, 'Chariot')
+		k.random_sleep_minutes(7, 12)
 
 def main():
-	test()
+	run_auto_buy()
 
 if __name__ == "__main__":
 	main()

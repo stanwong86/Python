@@ -5,8 +5,8 @@ import re
 import tools
 
 class Training(object):
-	def __init__(self, koc):
-		self.koc = koc
+	def __init__(self):
+		super(Training, self).__init__()
 
 	def log_result(self, html_source, selection, amount):
 		pattern = 'Not enough money for that operation.'
@@ -27,11 +27,11 @@ class Training(object):
 
 		payload = {
 			'train[%s]' % (selection) : amount,
-			'turing': self.koc.get_turing_string(),
+			'turing': self.get_turing_string(),
 			'hash': ''
 		}
 
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 		source = post.content
 		self.log_result(source, selection, amount)
 
@@ -43,12 +43,13 @@ class Training(object):
 			'hash': ''
 		}
 		
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 		tools.log('Unit Production Upgraded')
 
 	def buy_max_attackers(self):
-		gold = self.koc.get_current_gold('https://www.kingsofchaos.com/train.php')
-		self.koc.random_sleep_seconds(5, 10)
+		gold = self.get_current_gold('https://www.kingsofchaos.com/train.php')
+		soldiers = self.get_current_soldier_count('general')
+		self.random_sleep_seconds(5, 10)
 		self.train('attacker', int(gold)/2000)
 
 def main():
