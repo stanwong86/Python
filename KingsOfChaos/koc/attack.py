@@ -1,15 +1,15 @@
 import sys
 import os
-sys.path.append('C:\\dev\\python\\KingsOfChaos')
 import re
 import tools
+from base import Base
 
-class Attack(object):
-	def __init__(self, koc):
-		self.koc = koc
+class Attack(Base):
+	def __init__(self):
+		pass
 
 	def open_stats_page(self, defender_id):
-		source = self.koc.read_url('https://www.kingsofchaos.com/stats.php?id=%s' % defender_id)
+		source = self.read_url('https://www.kingsofchaos.com/stats.php?id=%s' % defender_id)
 
 	def raid(self, defender_id):
 		self.open_stats_page(defender_id)
@@ -19,18 +19,15 @@ class Attack(object):
 			'defender_id': defender_id,
 			'attack_type': 'raid',
 			'attackbut': 'Raiding..',
-			'turing': self.koc.get_turing_string()
+			'turing': self.get_turing_string()
 		}
 
-		post = self.koc.session.post(url, data=payload, headers=self.koc.headers)
+		post = self.session.post(url, data=payload, headers=self.headers)
 		source = post.content
 		print 'Target raided'
 
 def main():
-	from koc import KoC
-	k = KoC('qqqq')
-	t = Training(k)
-	t.buy_max_attackers()
+	pass
 
 if __name__ == "__main__":
 	main()
