@@ -62,7 +62,7 @@ def scrapeCatalog():
 	#<div class="style__PriceFontSize-gob4i1-0 fwkyhU h-text-bold" data-test="product-price">$36.99</div>
 	print(oz, price)
 
-#print(lowestCoupon(0))
+print(lowestCoupon(5))
 
 
-scrapeCatalog()
+#scrapeCatalog()
